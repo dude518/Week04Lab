@@ -24,7 +24,31 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        Cookie[] cookies = request.getCookies();
+        String username;
+        String action = request.getParameter("action");
+        String sessionUser = (String) session.getAttribute("user");
         
+        for(Cookie c : cookies)
+        {
+            if(c.getName().equals("usernameCookie"))
+            {
+                username = c.getValue();
+                request.setAttribute("username", username);
+                request.setAttribute("rememberme", "checked");
+            }
+        }
+        if(action != null && action.equals("logged out"))
+        {
+            session.removeAttribute("username");
+            request.setAttribute("incorrect", "You have successfully logged out.");
+        }
+        
+        if(sessionUser != null)
+        {
+            response.sendRedirect("home");
+        }
         
         getServletContext().getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
     }
@@ -69,8 +93,8 @@ public class LoginServlet extends HttpServlet {
                     }
                 }
                 HttpSession session = request.getSession();
-                session.setAttribute("user", user);
-                response.sendRedirect("/home");
+                session.setAttribute("user", username);
+                response.sendRedirect("home");
             }
             else
             {
