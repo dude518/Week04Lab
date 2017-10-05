@@ -8,6 +8,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:import url="/includes/header.html"/>
 <h1>Home page</h1>
-<h3>Hello ${name}</h3>
-<a href="">Log out</a>
+<h3>Hello ${username}</h3>
+<a href="login?action=loggedout">Log out</a>
 <c:import url="/includes/footer.html"/>

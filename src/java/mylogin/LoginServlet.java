@@ -36,21 +36,23 @@ public class LoginServlet extends HttpServlet {
             {
                 username = c.getValue();
                 request.setAttribute("username", username);
-                request.setAttribute("rememberme", "checked");
+                request.setAttribute("remember", "checked");
             }
         }
-        if(action != null && action.equals("logged out"))
+        if(action != null && action.equals("loggedout"))
         {
-            session.removeAttribute("username");
+            session.removeAttribute("user");
             request.setAttribute("incorrect", "You have successfully logged out.");
+            getServletContext().getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
         }
         
         if(sessionUser != null)
         {
             response.sendRedirect("home");
+            return;
         }
         
-        getServletContext().getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
+        getServletContext().getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
     }
 
     @Override
@@ -61,21 +63,20 @@ public class LoginServlet extends HttpServlet {
         String message = "";
         String rememberMe = request.getParameter("rememberme");
         
-        if(username != null && !username.equals("") && password != null && !password.equals(""))
+        if(username == null || username.equals("") || password == null || password.equals(""))
         {
             message = "Both feilds need to be filled out.";
         }
         else
         {
             UserService user = new UserService();
-            user.login(username, password);
-            if(user != null)
+            if(user.login(username, password) != null)
             {
                 request.setAttribute("user", user);
                 if(rememberMe != null)
                 {
                     Cookie c = new Cookie("usernameCookie", username);
-                    c.setMaxAge(60);
+                    c.setMaxAge(3600);
                     c.setPath("/");
                     response.addCookie(c);
                 }
@@ -95,6 +96,7 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 session.setAttribute("user", username);
                 response.sendRedirect("home");
+                return;
             }
             else
             {
@@ -104,7 +106,7 @@ public class LoginServlet extends HttpServlet {
         
         request.setAttribute("username", username);
         request.setAttribute("incorrect", message);
-        getServletContext().getRequestDispatcher("/WEB-INF/index.jsp").forward(request, response);
+        getServletContext().getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
     }
 
 }

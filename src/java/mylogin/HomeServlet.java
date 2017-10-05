@@ -25,9 +25,10 @@ public class HomeServlet extends HttpServlet {
             throws ServletException, IOException {
         HttpSession session = request.getSession();
         String user = (String) session.getAttribute("user");
-        if(user == null)
+        if(user == null || user.equals(""))
         {
             response.sendRedirect("login");
+            return;
         }
         request.setAttribute("username", user);
         getServletContext().getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
